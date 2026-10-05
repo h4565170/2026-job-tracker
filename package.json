@@ -1,0 +1,20 @@
+{
+  "name": "2026-autumn-job-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "2026 秋招岗位投递管理表：移动优先、响应式，本地使用 SQLite，生产环境使用 PostgreSQL，并提供自动化接入 API。",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test test/api.test.js",
+    "check": "node --check server.js && node --check src/app.js && node --check src/database.js && node --check src/postgres.js && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  }
+}

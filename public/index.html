@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="description" content="2026 秋招岗位投递管理表，支持手机和电脑访问、筛选、快速更新状态与数据持久化。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>2026 秋招岗位投递管理表</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">秋</div>
+        <div>
+          <p class="eyebrow">2026 AUTUMN RECRUITING</p>
+          <h1>秋招投递管理</h1>
+        </div>
+      </div>
+
+      <nav class="desktop-nav" aria-label="主导航">
+        <button class="nav-button is-active" type="button" data-page="overview">概览</button>
+        <button class="nav-button" type="button" data-page="jobs">岗位</button>
+      </nav>
+
+      <button class="button button-primary button-add" id="headerAddButton" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+        <span>新增岗位</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section class="page" id="overviewPage">
+      <div class="page-heading overview-heading">
+        <div>
+          <p class="section-kicker">投递概览</p>
+          <h2>抓住每一次机会</h2>
+          <p id="todayText" class="muted">正在读取数据…</p>
+        </div>
+        <button class="button button-ghost desktop-only" id="overviewAddButton" type="button">
+          <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+          新增一条
+        </button>
+      </div>
+
+      <div class="stats-grid" id="statsGrid">
+        <article class="stat-card stat-total">
+          <div class="stat-top"><span>总投递数</span><svg class="icon"><use href="#i-briefcase"></use></svg></div>
+          <strong id="statTotal">0</strong>
+          <small id="statTotalHint">全部岗位记录</small>
+        </article>
+        <article class="stat-card stat-week">
+          <div class="stat-top"><span>本周投递数</span><svg class="icon"><use href="#i-calendar"></use></svg></div>
+          <strong id="statWeek">0</strong>
+          <small id="statWeekHint">周一至周日</small>
+        </article>
+        <article class="stat-card stat-interview">
+          <div class="stat-top"><span>面试数</span><svg class="icon"><use href="#i-users"></use></svg></div>
+          <strong id="statInterviews">0</strong>
+          <small>一面、二面、Offer</small>
+        </article>
+        <article class="stat-card stat-offer">
+          <div class="stat-top"><span>Offer 数</span><svg class="icon"><use href="#i-trophy"></use></svg></div>
+          <strong id="statOffers">0</strong>
+          <small>已获得 Offer</small>
+        </article>
+        <article class="stat-card stat-rejection">
+          <div class="stat-top"><span>拒绝数</span><svg class="icon"><use href="#i-xcircle"></use></svg></div>
+          <strong id="statRejections">0</strong>
+          <small>当前状态为拒绝</small>
+        </article>
+        <article class="stat-card stat-no-response">
+          <div class="stat-top"><span>无回应数</span><svg class="icon"><use href="#i-clock"></use></svg></div>
+          <strong id="statNoResponse">0</strong>
+          <small>需要跟进或归档</small>
+        </article>
+        <article class="stat-card stat-rate">
+          <div class="stat-top"><span>面试率</span><svg class="icon"><use href="#i-chart"></use></svg></div>
+          <strong id="statInterviewRate">0%</strong>
+          <small id="statInterviewRateHint">按已投记录计算</small>
+        </article>
+        <article class="stat-card stat-offer-rate">
+          <div class="stat-top"><span>Offer 率</span><svg class="icon"><use href="#i-target"></use></svg></div>
+          <strong id="statOfferRate">0%</strong>
+          <small id="statOfferRateHint">按已投记录计算</small>
+        </article>
+      </div>
+
+      <section class="panel recent-panel">
+        <div class="panel-header">
+          <div>
+            <p class="section-kicker">最近动态</p>
+            <h3>最近投递的岗位</h3>
+          </div>
+          <button class="text-button" id="viewAllButton" type="button">查看全部 <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="recent-list" id="recentList"></div>
+      </section>
+    </section>
+
+    <section class="page" id="jobsPage" hidden>
+      <div class="page-heading jobs-heading">
+        <div>
+          <p class="section-kicker">岗位记录</p>
+          <h2>投递管理</h2>
+          <p class="muted">搜索、筛选并快速推进投递状态</p>
+        </div>
+        <button class="button button-primary desktop-only" id="jobsAddButton" type="button">
+          <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+          新增岗位
+        </button>
+      </div>
+
+      <section class="toolbar-panel">
+        <div class="search-row">
+          <label class="search-box">
+            <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+            <input id="searchInput" type="search" placeholder="搜索公司、岗位、地点、备注…" autocomplete="off">
+          </label>
+          <button class="button button-ghost filter-toggle" id="filterToggle" type="button" aria-expanded="false">
+            <svg class="icon" aria-hidden="true"><use href="#i-filter"></use></svg>
+            筛选 <span class="filter-count" id="filterCount" hidden>0</span>
+          </button>
+        </div>
+
+        <div class="filters" id="filtersPanel">
+          <label>
+            <span>状态</span>
+            <select id="statusFilter"><option value="">全部状态</option></select>
+          </label>
+          <label>
+            <span>岗位类型</span>
+            <select id="jobTypeFilter"><option value="">全部岗位</option></select>
+          </label>
+          <label>
+            <span>公司类型</span>
+            <select id="companyTypeFilter"><option value="">全部公司</option></select>
+          </label>
+          <label>
+            <span>城市</span>
+            <select id="cityFilter"><option value="">全部城市</option></select>
+          </label>
+          <button class="button button-subtle clear-filters" id="clearFilters" type="button">清除筛选</button>
+        </div>
+      </section>
+
+      <div class="list-summary">
+        <p id="listCount">共 0 条记录</p>
+        <span id="loadingIndicator" class="loading-indicator" hidden>正在加载…</span>
+      </div>
+
+      <section class="panel table-panel desktop-table-wrap" id="desktopTablePanel">
+        <table class="jobs-table">
+          <thead>
+            <tr>
+              <th>公司与岗位</th>
+              <th>投递日期</th>
+              <th>岗位 / 公司类型</th>
+              <th>地点 / 渠道</th>
+              <th>薪资</th>
+              <th>状态</th>
+              <th class="actions-column">操作</th>
+            </tr>
+          </thead>
+          <tbody id="applicationsTableBody"></tbody>
+        </table>
+      </section>
+
+      <section class="mobile-cards" id="applicationsMobileList"></section>
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="empty-icon" aria-hidden="true">
+          <svg class="icon"><use href="#i-briefcase"></use></svg>
+        </div>
+        <h3>还没有符合条件的岗位</h3>
+        <p>新增一条投递记录，或调整搜索与筛选条件。</p>
+        <button class="button button-primary" id="emptyAddButton" type="button">
+          <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+          新增岗位
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobile-nav" aria-label="移动端主导航">
+    <button class="mobile-nav-button is-active" type="button" data-page="overview">
+      <svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg>
+      <span>概览</span>
+    </button>
+    <button class="mobile-nav-button" type="button" data-page="jobs">
+      <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg>
+      <span>岗位</span>
+    </button>
+  </nav>
+
+  <dialog class="application-dialog" id="applicationDialog">
+    <form class="application-form" id="applicationForm" novalidate>
+      <input type="hidden" id="recordId">
+      <header class="sheet-header">
+        <div>
+          <p class="section-kicker" id="dialogKicker">新增记录</p>
+          <h2 id="dialogTitle">新增岗位</h2>
+        </div>
+        <button class="icon-button" id="dialogCloseButton" type="button" aria-label="关闭">
+          <svg class="icon"><use href="#i-x"></use></svg>
+        </button>
+      </header>
+
+      <div class="sheet-body">
+        <div class="form-section">
+          <h3>基本信息</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>投递日期 <b>*</b></span>
+              <input id="applicationDate" name="applicationDate" type="date" required>
+            </label>
+            <label class="field">
+              <span>投递状态 <b>*</b></span>
+              <select id="status" name="status" required></select>
+            </label>
+            <label class="field field-full">
+              <span>公司名称 <b>*</b></span>
+              <input id="companyName" name="companyName" type="text" maxlength="120" placeholder="例如：某某科技" required>
+            </label>
+            <label class="field field-full">
+              <span>岗位名称 <b>*</b></span>
+              <input id="jobTitle" name="jobTitle" type="text" maxlength="160" placeholder="例如：海外销售管培生" required>
+            </label>
+            <label class="field">
+              <span>岗位类型 <b>*</b></span>
+              <select id="jobType" name="jobType" required></select>
+            </label>
+            <label class="field">
+              <span>公司类型 <b>*</b></span>
+              <select id="companyType" name="companyType" required></select>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>投递信息</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>投递渠道 <b>*</b></span>
+              <input id="channel" name="channel" type="text" maxlength="80" list="channelOptions" placeholder="例如：企业官网 / BOSS" required>
+            </label>
+            <label class="field">
+              <span>工作地点 <b>*</b></span>
+              <input id="location" name="location" type="text" maxlength="100" list="cityOptions" placeholder="例如：深圳" required>
+            </label>
+            <label class="field">
+              <span>薪资范围</span>
+              <input id="salaryRange" name="salaryRange" type="text" maxlength="80" placeholder="例如：15-20K">
+            </label>
+            <label class="field">
+              <span>岗位链接</span>
+              <input id="jobUrl" name="jobUrl" type="url" maxlength="1000" inputmode="url" placeholder="https://…">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>补充信息</h3>
+          <div class="form-grid">
+            <label class="field field-full">
+              <span>拒绝原因</span>
+              <textarea id="rejectionReason" name="rejectionReason" maxlength="500" rows="2" placeholder="例如：岗位匹配度不足、流程终止"></textarea>
+            </label>
+            <label class="field field-full">
+              <span>备注</span>
+              <textarea id="notes" name="notes" maxlength="2000" rows="3" placeholder="记录笔试时间、联系人、待办事项等"></textarea>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <footer class="sheet-footer">
+        <button class="button button-danger-text" id="deleteRecordButton" type="button" hidden>删除</button>
+        <div class="footer-spacer"></div>
+        <button class="button button-subtle" id="cancelButton" type="button">取消</button>
+        <button class="button button-primary" id="saveButton" type="submit">保存岗位</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <datalist id="cityOptions"></datalist>
+  <datalist id="channelOptions"></datalist>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+    <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM17 11a3.5 3.5 0 0 0 0-7M20 20v-1.4a4 4 0 0 0-3-3.8"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></symbol>
+    <symbol id="i-xcircle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4L16.5 3.5Z"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/></symbol>
+  </svg>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  job-tracker:
+    build: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATA_DIR: /var/data
+      APP_PASSWORD: ${APP_PASSWORD:-change-me}
+      AUTOMATION_API_KEY: ${AUTOMATION_API_KEY:-change-this-key}
+    ports:
+      - "3000:3000"
+    volumes:
+      - job-tracker-data:/var/data
+
+volumes:
+  job-tracker-data:

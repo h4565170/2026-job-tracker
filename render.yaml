@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: 2026-job-tracker
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: APP_PASSWORD
+        sync: false
+      - key: AUTOMATION_API_KEY
+        generateValue: true
+    disk:
+      name: job-tracker-data
+      mountPath: /var/data
+      sizeGB: 1

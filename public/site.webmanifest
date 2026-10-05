@@ -1,0 +1,19 @@
+{
+  "name": "2026 秋招岗位投递管理表",
+  "short_name": "秋招投递",
+  "description": "手机和电脑均可使用的 2026 秋招岗位投递管理工具",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#0f766e",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
