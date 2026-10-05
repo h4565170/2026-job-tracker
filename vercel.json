@@ -1,6 +1,7 @@
 {
   "framework": null,
   "outputDirectory": "public",
+  "regions": ["sin1"],
   "functions": {
     "api/[...route].js": {
       "maxDuration": 10
